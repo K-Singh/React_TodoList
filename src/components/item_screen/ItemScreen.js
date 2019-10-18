@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
+import editItemTransaction from '../transactions/editItemTransaction';
 
 export class ItemScreen extends Component {
     constructor(props){
@@ -55,11 +56,14 @@ export class ItemScreen extends Component {
         if(!found){
             newItems.push(newItem);
         }
-        var newList = Object.assign({}, this.props.todoList);
+        /*var newList = Object.assign({}, this.props.todoList);
         this.reassignKeys(newItems);
         newList.items = newItems;
         this.update(newList);
-        this.reorderLists(newList);
+        this.reorderLists(newList);*/
+
+        var editItemTrans = new editItemTransaction(this, newItems);
+        this.props.jsTPS.addTransaction(editItemTrans);
     }
 
     onCancel = e => {

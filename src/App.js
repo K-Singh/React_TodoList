@@ -3,6 +3,8 @@ import testTodoListData from './TestTodoListData.json'
 import HomeScreen from './components/home_screen/HomeScreen'
 import ItemScreen from './components/item_screen/ItemScreen'
 import ListScreen from './components/list_screen/ListScreen'
+import jsTPS from './components/transactions/jsTPS'
+import ReactDOM from 'react-dom';
 
 const AppScreen = {
   HOME_SCREEN: "HOME_SCREEN",
@@ -14,6 +16,9 @@ class App extends Component {
   constructor(){
     super();
     this.modal = React.createRef();
+    this.jsTPS = new jsTPS();
+    this.div = React.createRef();
+    this.onList = false;
   }
   state = {
     currentScreen: AppScreen.HOME_SCREEN,
@@ -23,6 +28,8 @@ class App extends Component {
   }
 
   goHome = () => {
+    this.jsTPS.clearAllTransactions();
+    this.onList = false;
     this.setState({currentScreen: AppScreen.HOME_SCREEN});
     this.setState({currentList: null});
   }
@@ -30,11 +37,16 @@ class App extends Component {
   loadList = (todoListToLoad) => {
     this.setState({currentScreen: AppScreen.LIST_SCREEN});
     this.setState({currentList: todoListToLoad});
+    this.onList = true;
+    
+    
     console.log("currentList: " + this.state.currentList);
     console.log("currentScreen: " + this.state.currentScreen);
   }
 
   loadItem = (item) => {
+    this.jsTPS.clearAllTransactions();
+    this.onList = false;
     this.setState({currentScreen: AppScreen.ITEM_SCREEN});
     this.setState({todoItem: item});
   }
@@ -117,8 +129,34 @@ class App extends Component {
   cancelDelete = e => {
     this.modal.current.className = "";
   }
-  render() {
+
+
+  
+
+  onKeysPressed = e => {
     
+    if(e.key === "z"){
+      console.log("sd");
+      if(e.ctrlKey){
+        console.log("hello");
+        this.jsTPS.undoTransaction();
+      }
+    }
+
+    if(e.key === "y"){
+      console.log("sd");
+      if(e.ctrlKey){
+        console.log("hello");
+        this.jsTPS.doTransaction();
+      }
+    }
+  }
+  
+  
+  
+    
+  render() {
+   
 
     switch(this.state.currentScreen) {
       case AppScreen.HOME_SCREEN:
@@ -128,7 +166,10 @@ class App extends Component {
         createList={this.createList.bind(this)}/>;
       case AppScreen.LIST_SCREEN:            
         return(
-          <div>
+          <div onKeyDown={this.onKeysPressed}
+          
+          tabIndex="0"
+          ref={this.div}>
           <div id="yes_no_modal" className="" ref={this.modal} >
                 <div className="yes_no_modal_text">Delete List?</div>
                 <div className="yes_no_modal_text" id="yes_no_modal_title">Are you sure you want to delete this list?</div>
@@ -140,7 +181,9 @@ class App extends Component {
                 <div className="yes_no_modal_text">The list will not be retrievable</div>
             </div> 
 
-          <ListScreen
+          <ListScreen 
+          
+          
           goHome={this.goHome.bind(this)}
           todoList={this.state.currentList}
           loadList={this.loadList.bind(this)}
@@ -148,7 +191,10 @@ class App extends Component {
           updateKeys = {this.updateKeys.bind(this)}
           loadItem = {this.loadItem.bind(this)}
           changeLists = {this.changeLists.bind(this)}
-          modal = {this.modal} />
+          modal = {this.modal} 
+          jsTPS = {this.jsTPS}
+          />
+          
           </div>
         );
       case AppScreen.ITEM_SCREEN:
@@ -159,6 +205,7 @@ class App extends Component {
           loadList = {this.loadList.bind(this)}
           updateKeys = {this.updateKeys.bind(this)}
           updateLists = {this.updateLists.bind(this)}
+          jsTPS = {this.jsTPS}
         />;
       default:
         return <div>ERROR</div>;

@@ -3,6 +3,11 @@ import ListHeading from './ListHeading'
 import ListItemsTable from './ListItemsTable'
 import ListTrash from './ListTrash'
 import PropTypes from 'prop-types';
+import moveUpTransaction from '../transactions/moveUpTransaction'
+import moveDownTransaction from '../transactions/moveDownTransaction'
+import removeItemTransaction from '../transactions/removeItemTransaction'
+import changeOwnerTransaction from '../transactions/changeOwnerTransaction';
+import changeNameTransaction from '../transactions/changeNameTransaction';
 
 export class ListScreen extends Component {
     constructor(props){
@@ -34,8 +39,9 @@ export class ListScreen extends Component {
     reorderLists = (newList) => {(this.props.updateLists(newList));}
     renameLists = (newList, key) => {(this.props.changeLists(newList, key));}
     reassignKeys = (listToUpdate) => {(this.props.updateKeys(listToUpdate));}
+
     moveUp(key){
-       var itemOne = this.props.todoList.items.find((e) => e.key == key-1);
+     /*  var itemOne = this.props.todoList.items.find((e) => e.key == key-1);
        var itemTwo = this.props.todoList.items.find((e) => e.key == key);
        var newItems = this.props.todoList.items.map(element => {
            if(element.key == key){
@@ -49,12 +55,15 @@ export class ListScreen extends Component {
        this.reassignKeys(newItems);
        newTodoList.items = newItems;     
        this.update(newTodoList);
-       this.reorderLists(newTodoList);
+       this.reorderLists(newTodoList);*/
+       var moveUpTrans = new moveUpTransaction(this, key);
+       this.props.jsTPS.addTransaction(moveUpTrans);
+
    }
     
    moveDown(key){
-       console.log("test");
-    var itemOne = this.props.todoList.items.find((e) => e.key == key+1);
+      
+   /* var itemOne = this.props.todoList.items.find((e) => e.key == key+1);
     var itemTwo = this.props.todoList.items.find((e) => e.key == key);
     var newItems = this.props.todoList.items.map(element => {
         if(element.key == key){
@@ -68,10 +77,13 @@ export class ListScreen extends Component {
     this.reassignKeys(newItems);
     newTodoList.items = newItems;     
     this.update(newTodoList);
-    this.reorderLists(newTodoList);
+    this.reorderLists(newTodoList);*/
+    var moveDownTrans = new moveDownTransaction(this, key);
+    this.props.jsTPS.addTransaction(moveDownTrans);
+
     }
     removeItem(key){
-       
+       /*
         var newItems = this.props.todoList.items.filter(element => {
             if(element.key != key){
                 return true;
@@ -82,7 +94,9 @@ export class ListScreen extends Component {
         this.reassignKeys(newItems);
         newTodoList.items = newItems;     
         this.update(newTodoList);
-        this.reorderLists(newTodoList);
+        this.reorderLists(newTodoList);*/
+    var removeItemTrans = new removeItemTransaction(this, key);
+    this.props.jsTPS.addTransaction(removeItemTrans);
         }
     addItem(){
         var item = new Object();
@@ -96,22 +110,32 @@ export class ListScreen extends Component {
     }
 
     updateName = e => {
-    var newTodoList = Object.assign({}, this.props.todoList);
+   /* var newTodoList = Object.assign({}, this.props.todoList);
     
     newTodoList.name = this.name.current.value;  
     this.renameLists(newTodoList, this.props.todoList.key);
-    this.update(newTodoList);
+    this.update(newTodoList);*/
+    var changeNameTrans = new changeNameTransaction(this, this.name);
+    this.props.jsTPS.addTransaction(changeNameTrans);
     }
-   
+    
+
+
     updateOwner = e => {
-        var newTodoList = Object.assign({}, this.props.todoList);
+       /* var newTodoList = Object.assign({}, this.props.todoList);
         
         newTodoList.owner = this.owner.current.value;  
         this.renameLists(newTodoList, this.props.todoList.key);
-        this.update(newTodoList);
+        this.update(newTodoList);*/
+
+        var changeOwnerTrans = new changeOwnerTransaction(this, this.owner);
+        this.props.jsTPS.addTransaction(changeOwnerTrans);
         }
        
+
+   
     render() {
+        
         return (
             
             
